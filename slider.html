@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Responsive Slider</title>
 
     <style>
@@ -11,13 +14,13 @@
         /* Default (Desktop) Variables */
         --card-width: 200px;
         --card-height: 300px;
-        --card-gap: 20px; /* Gap between stacked cards */
-        --card-start-x: 50%; /* Horizontal starting position of stack */
-        --card-start-y: 50%; /* Vertical position */
+        --card-gap: 20px;
+        --card-start-x: 50%;
+        --card-start-y: 50%;
 
         /* Content positioning */
         --content-left: 10%;
-        --content-width: 30vw;
+        --content-width: min(500px, 40vw);
         --content-top: 50%;
         --content-transform: translateY(-50%);
         --content-align: left;
@@ -29,20 +32,29 @@
         box-sizing: border-box;
       }
 
+      html,
       body {
-        height: 100vh;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
         display: grid;
         place-items: center;
-        overflow: hidden;
         background: #000;
         font-family: helvetica, sans-serif;
+        min-height: 100vh;
+        -webkit-tap-highlight-color: transparent;
       }
 
       main {
         position: relative;
         width: 100%;
-        height: 100%;
+        height: 100vh;
+        max-height: 100vh;
         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
       }
 
       .slider {
@@ -80,7 +92,7 @@
         z-index: 0;
       }
 
-      /* Stacked Cards Logic using CSS Calc and Variables */
+      /* Stacked Cards Logic */
       .item:nth-child(3) {
         left: var(--card-start-x);
       }
@@ -111,37 +123,50 @@
         text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
         opacity: 0;
         display: none;
-        /* Add a subtle gradient behind text for readability on bright images */
-        background: radial-gradient(rgba(0, 0, 0, 0.3), transparent 70%);
+        background: linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.7),
+          rgba(0, 0, 0, 0.3)
+        );
         padding: 20px;
-        border-radius: 10px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
 
       .content .title {
         font-family: "Arial Black", sans-serif;
         text-transform: uppercase;
-        font-size: clamp(1.5rem, 5vw, 3rem); /* Responsive font size */
+        font-size: clamp(1.5rem, 5vw, 3rem);
+        margin-bottom: 15px;
+        line-height: 1.2;
       }
 
       .content .description {
-        line-height: 1.7;
+        line-height: 1.6;
         margin: 1rem 0 1.5rem;
-        font-size: clamp(0.8rem, 2vw, 1rem);
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        opacity: 0.9;
       }
 
       .content button {
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.1);
         color: #fff;
-        border: 2px solid #fff;
-        padding: 0.75rem 1.5rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 30px;
         cursor: pointer;
-        font-size: 1rem;
-        transition: 0.3s;
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        transition: all 0.3s ease;
+        border-radius: 30px;
+        font-weight: bold;
+        letter-spacing: 1px;
       }
 
       .content button:hover {
         background: white;
         color: black;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
       }
 
       .item:nth-of-type(2) .content {
@@ -163,159 +188,311 @@
 
       .nav {
         position: absolute;
-        bottom: 2rem;
+        bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 10;
         user-select: none;
+        display: flex;
+        gap: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px 20px;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
 
       .nav .btn {
-        background: rgba(255, 255, 255, 0.6);
-        color: rgba(0, 0, 0, 0.7);
+        background: rgba(255, 255, 255, 0.8);
+        color: rgba(0, 0, 0, 0.8);
         border-radius: 50%;
-        padding: 1rem; /* Larger touch area */
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-        margin: 0 10px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
+        font-size: 24px;
       }
 
       .nav .btn:hover {
-        background: rgba(255, 255, 255, 1);
+        background: white;
         color: black;
+        transform: scale(1.1);
+      }
+
+      .nav .btn:active {
+        transform: scale(0.95);
       }
 
       /* --- MEDIA QUERIES --- */
 
-      /* Tablet / Small Desktop (max-width: 1024px) */
-      @media (max-width: 1024px) {
+      /* Tablet Landscape / Small Desktop */
+      @media (max-width: 1200px) {
         :root {
-          --card-width: 160px;
-          --card-height: 240px;
-          --content-width: 45vw;
+          --card-width: 180px;
+          --card-height: 270px;
+          --content-width: min(400px, 45vw);
         }
       }
 
-      /* Mobile (max-width: 768px) */
-      @media (max-width: 768px) {
+      /* Tablet Portrait */
+      @media (max-width: 1024px) and (orientation: portrait) {
         :root {
-          /* Move cards down */
-          --card-start-y: 75%;
-          /* Center the stack horizontally */
-          --card-start-x: 50%;
-          /* Make cards smaller */
-          --card-width: 130px;
-          --card-height: 190px;
-          --card-gap: 10px;
+          --card-width: 160px;
+          --card-height: 240px;
+          --card-gap: 15px;
+          --content-width: min(350px, 50vw);
+          --content-left: 5%;
+        }
 
-          /* Move content to top and center it */
+        .content {
+          padding: 15px;
+        }
+
+        .nav {
+          bottom: 20px;
+        }
+      }
+
+      /* Mobile Landscape */
+      @media (max-width: 896px) and (orientation: landscape) {
+        :root {
+          --card-start-y: 60%;
+          --card-width: 140px;
+          --card-height: 200px;
+          --card-gap: 10px;
+          --content-width: min(300px, 45vw);
+          --content-top: 40%;
+        }
+
+        main {
+          height: 100vh;
+        }
+      }
+
+      /* Mobile Portrait */
+      @media (max-width: 768px) and (orientation: portrait) {
+        :root {
+          --card-start-y: 70%;
+          --card-start-x: 50%;
+          --card-width: 120px;
+          --card-height: 180px;
+          --card-gap: 8px;
           --content-left: 50%;
           --content-transform: translate(-50%, -50%);
-          --content-width: 80vw;
-          --content-top: 35%;
+          --content-width: 85vw;
+          --content-top: 30%;
           --content-align: center;
         }
 
+        /* Mobile stack with centered alignment */
         .item:nth-child(3) {
-          /* On mobile, center the first card of the stack relative to screen */
           left: 50%;
           transform: translate(-50%, -50%);
         }
+
         .item:nth-child(4) {
-          left: calc(50% + var(--card-width) * 0.4);
+          left: calc(50% + (var(--card-width) * 0.8));
           transform: translate(-50%, -50%);
-          z-index: -1; /* Tuck behind */
+          z-index: -1;
+          opacity: 0.7;
         }
+
         .item:nth-child(5) {
-          left: calc(50% + var(--card-width) * 0.8);
+          left: calc(50% + (var(--card-width) * 1.6));
           transform: translate(-50%, -50%);
           z-index: -2;
+          opacity: 0.4;
         }
+
         .item:nth-child(6) {
-          left: calc(50% + var(--card-width) * 1.2);
+          left: calc(50% + (var(--card-width) * 2.4));
           transform: translate(-50%, -50%);
           opacity: 0;
         }
 
-        /* Adjust Animation for mobile centering */
+        .content {
+          padding: 20px 15px;
+          border-radius: 10px;
+        }
+
+        .content .title {
+          font-size: 1.8rem;
+          margin-bottom: 10px;
+        }
+
+        .content .description {
+          font-size: 0.95rem;
+          line-height: 1.5;
+          margin: 10px 0 15px;
+        }
+
+        .content button {
+          padding: 10px 25px;
+          font-size: 0.95rem;
+        }
+
+        .nav {
+          bottom: 15px;
+          padding: 8px 15px;
+          gap: 15px;
+        }
+
+        .nav .btn {
+          width: 45px;
+          height: 45px;
+          font-size: 20px;
+        }
+
         @keyframes show {
           from {
             opacity: 0;
             filter: blur(5px);
-            transform: translate(-50%, calc(-50% + 75px));
+            transform: translate(-50%, calc(-50% + 50px));
           }
           to {
             opacity: 1;
             filter: blur(0);
-            transform: translate(-50%, -50%);
           }
         }
       }
 
-      /* Small Mobile (max-width: 480px) */
-      @media (max-width: 480px) {
+      /* Small Mobile */
+      @media (max-width: 480px) and (orientation: portrait) {
         :root {
-          --card-width: 110px;
-          --card-height: 160px;
-          --content-top: 30%;
+          --card-width: 100px;
+          --card-height: 150px;
+          --card-gap: 5px;
+          --content-top: 25%;
+          --content-width: 90vw;
+        }
+
+        .item {
+          border-radius: 15px;
+        }
+
+        .item:nth-child(4) {
+          left: calc(50% + (var(--card-width) * 0.9));
+        }
+
+        .item:nth-child(5) {
+          left: calc(50% + (var(--card-width) * 1.8));
+        }
+
+        .item:nth-child(6) {
+          left: calc(50% + (var(--card-width) * 2.7));
+        }
+
+        .content {
+          padding: 15px 12px;
         }
 
         .content .title {
           font-size: 1.5rem;
         }
 
+        .content .description {
+          font-size: 0.85rem;
+          margin: 8px 0 12px;
+        }
+
+        .content button {
+          padding: 8px 20px;
+          font-size: 0.85rem;
+        }
+
         .nav {
-          bottom: 1rem;
+          bottom: 10px;
+          padding: 6px 12px;
+          gap: 12px;
         }
 
         .nav .btn {
-          padding: 0.8rem;
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
         }
       }
-      /* --- 1. The Transition Overlay (The Curtain) --- */
+
+      /* Very Small Mobile */
+      @media (max-width: 360px) and (orientation: portrait) {
+        :root {
+          --card-width: 85px;
+          --card-height: 130px;
+          --content-top: 22%;
+        }
+
+        .content .title {
+          font-size: 1.3rem;
+        }
+
+        .content .description {
+          font-size: 0.8rem;
+        }
+
+        .content button {
+          padding: 7px 18px;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Height-based adjustments for very short screens */
+      @media (max-height: 600px) and (orientation: portrait) {
+        :root {
+          --card-start-y: 75%;
+          --content-top: 25%;
+        }
+
+        .content {
+          padding: 10px;
+        }
+
+        .content .title {
+          font-size: 1.2rem;
+          margin-bottom: 5px;
+        }
+
+        .content .description {
+          margin: 5px 0 10px;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* --- Touch Improvements --- */
+      @media (hover: none) and (pointer: coarse) {
+        .nav .btn {
+          min-width: 44px;
+          min-height: 44px;
+        }
+
+        .content button {
+          padding: 14px 28px;
+        }
+
+        /* Better touch targets */
+        .item {
+          cursor: pointer;
+        }
+      }
+
+      /* --- Transition Overlay --- */
       .transition-curtain {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #000; /* Color of the transition */
-        z-index: 9999; /* On top of everything */
-        opacity: 1; /* Start visible (black screen) */
-        pointer-events: none; /* Let clicks pass through when hidden */
+        background-color: #000;
+        z-index: 9999;
+        opacity: 1;
+        pointer-events: none;
         transition: opacity 0.8s ease-in-out;
       }
 
-      /* Class to hide the curtain (reveal the page) */
       .transition-curtain.hidden {
         opacity: 0;
-      }
-
-      /* --- 2. The Link/Button Style --- */
-      .view-btn {
-        text-decoration: none;
-        font-family: helvetica, sans-serif;
-        color: #fff;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        padding: 1rem 2rem;
-        border-radius: 30px;
-        background: rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        cursor: pointer;
-
-        /* Positioning centering for demo purposes */
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-      }
-
-      .view-btn:hover {
-        background: #fff;
-        color: #000;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
       }
     </style>
   </head>
@@ -395,10 +572,30 @@
     ></script>
 
     <script>
+      // Slider functionality
       const slider = document.querySelector(".slider");
+      let isAnimating = false;
 
+      function handleNavigation(direction) {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        const items = document.querySelectorAll(".item");
+
+        if (direction === "next") {
+          slider.append(items[0]);
+        } else if (direction === "prev") {
+          slider.prepend(items[items.length - 1]);
+        }
+
+        // Reset animation flag after transition
+        setTimeout(() => {
+          isAnimating = false;
+        }, 750);
+      }
+
+      // Click events for navigation
       document.addEventListener("click", (e) => {
-        // Check if the clicked element or its parent has the class 'next' or 'prev'
         const target = e.target;
         const isNext =
           target.classList.contains("next") ||
@@ -407,58 +604,52 @@
           target.classList.contains("prev") ||
           target.parentElement.classList.contains("prev");
 
-        const items = document.querySelectorAll(".item");
-
-        if (isNext) {
-          slider.append(items[0]);
-        }
-
-        if (isPrev) {
-          slider.prepend(items[items.length - 1]);
-        }
+        if (isNext) handleNavigation("next");
+        if (isPrev) handleNavigation("prev");
       });
-    </script>
-    <script>
-      window.onload = () => {
-        // 1. Select the curtain
-        const curtain = document.querySelector(".transition-curtain");
-        const anchors = document.querySelectorAll(".transition-link");
 
-        // 2. Reveal the page (Fade out the black curtain)
-        setTimeout(() => {
-          if (curtain) curtain.classList.add("hidden");
-        }, 100); // Small delay to ensure smooth rendering
+      // Touch swipe support for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
 
-        // 3. Intercept Link Clicks
-        anchors.forEach((anchor) => {
-          anchor.addEventListener("click", function (e) {
-            e.preventDefault(); // Stop immediate navigation
-            const target = this.href; // Get the destination
+      slider.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        },
+        { passive: true }
+      );
 
-            // Fade the curtain back in (Screen goes black)
-            curtain.classList.remove("hidden");
+      slider.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        },
+        { passive: true }
+      );
 
-            // Wait for animation to finish, then go to page
-            setTimeout(() => {
-              window.location.href = target;
-            }, 800); // Must match CSS transition time (0.8s)
-          });
-        });
-      };
-    </script>
-    <script>
-      // 2. ADD THIS SCRIPT TO HANDLE THE FADE IN
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left
+            handleNavigation("next");
+          } else {
+            // Swipe right
+            handleNavigation("prev");
+          }
+        }
+      }
+
+      // Transition curtain
       window.addEventListener("load", () => {
         const curtain = document.querySelector(".transition-curtain");
         setTimeout(() => {
           curtain.classList.add("hidden");
         }, 100);
-      });
-
-      // Your existing Slider Logic
-      const sliders = document.querySelector(".slider");
-      document.addEventListener("click", (e) => {
-        // ... existing slider logic ...
       });
     </script>
   </body>
