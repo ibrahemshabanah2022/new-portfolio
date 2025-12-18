@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Responsive Slider</title>
+
+    <style>
+      :root {
+        /* Default (Desktop) Variables */
+        --card-width: 200px;
+        --card-height: 300px;
+        --card-gap: 20px;
+        --card-start-x: 50%;
+        --card-start-y: 50%;
+
+        /* Content positioning */
+        --content-left: 10%;
+        --content-width: min(500px, 40vw);
+        --content-top: 50%;
+        --content-transform: translateY(-50%);
+        --content-align: left;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        background: #000;
+        font-family: helvetica, sans-serif;
+        min-height: 100vh;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      main {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .slider {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .item {
+        width: var(--card-width);
+        height: var(--card-height);
+        list-style: none;
+        position: absolute;
+        top: var(--card-start-y);
+        transform: translateY(-50%);
+        z-index: 1;
+        background-position: center;
+        background-size: cover;
+        border-radius: 20px;
+        box-shadow: 0 20px 30px rgba(255, 255, 255, 0.3) inset;
+        transition: transform 0.1s, left 0.75s, top 0.75s, width 0.75s,
+          height 0.75s;
+      }
+
+      /* Active Slide (Background) */
+      .item:nth-child(1),
+      .item:nth-child(2) {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        transform: none;
+        border-radius: 0;
+        box-shadow: none;
+        z-index: 0;
+      }
+
+      /* Stacked Cards Logic */
+      .item:nth-child(3) {
+        left: var(--card-start-x);
+      }
+      .item:nth-child(4) {
+        left: calc(var(--card-start-x) + (var(--card-width) + var(--card-gap)));
+      }
+      .item:nth-child(5) {
+        left: calc(
+          var(--card-start-x) + (var(--card-width) + var(--card-gap)) * 2
+        );
+      }
+      .item:nth-child(6) {
+        left: calc(
+          var(--card-start-x) + (var(--card-width) + var(--card-gap)) * 3
+        );
+        opacity: 0;
+      }
+
+      /* Text Content */
+      .content {
+        width: var(--content-width);
+        position: absolute;
+        top: var(--content-top);
+        left: var(--content-left);
+        transform: var(--content-transform);
+        text-align: var(--content-align);
+        color: white;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        display: none;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.7),
+          rgba(0, 0, 0, 0.3)
+        );
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .content .title {
+        font-family: "Arial Black", sans-serif;
+        text-transform: uppercase;
+        font-size: clamp(1.5rem, 5vw, 3rem);
+        margin-bottom: 15px;
+        line-height: 1.2;
+      }
+
+      .content .description {
+        line-height: 1.6;
+        margin: 1rem 0 1.5rem;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+        opacity: 0.9;
+      }
+
+      .content button {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 30px;
+        cursor: pointer;
+        font-size: clamp(0.9rem, 2vw, 1rem);
+        transition: all 0.3s ease;
+        border-radius: 30px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .content button:hover {
+        background: white;
+        color: black;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+      }
+
+      .item:nth-of-type(2) .content {
+        display: block;
+        animation: show 0.75s ease-in-out 0.3s forwards;
+      }
+
+      @keyframes show {
+        from {
+          opacity: 0;
+          filter: blur(5px);
+          transform: translateY(calc(-50% + 75px));
+        }
+        to {
+          opacity: 1;
+          filter: blur(0);
+        }
+      }
+
+      .nav {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        user-select: none;
+        display: flex;
+        gap: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px 20px;
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .nav .btn {
+        background: rgba(255, 255, 255, 0.8);
+        color: rgba(0, 0, 0, 0.8);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 24px;
+      }
+
+      .nav .btn:hover {
+        background: white;
+        color: black;
+        transform: scale(1.1);
+      }
+
+      .nav .btn:active {
+        transform: scale(0.95);
+      }
+
+      /* --- MEDIA QUERIES --- */
+
+      /* Tablet Landscape / Small Desktop */
+      @media (max-width: 1200px) {
+        :root {
+          --card-width: 180px;
+          --card-height: 270px;
+          --content-width: min(400px, 45vw);
+        }
+      }
+
+      /* Tablet Portrait */
+      @media (max-width: 1024px) and (orientation: portrait) {
+        :root {
+          --card-width: 160px;
+          --card-height: 240px;
+          --card-gap: 15px;
+          --content-width: min(350px, 50vw);
+          --content-left: 5%;
+        }
+
+        .content {
+          padding: 15px;
+        }
+
+        .nav {
+          bottom: 20px;
+        }
+      }
+
+      /* Mobile Landscape */
+      @media (max-width: 896px) and (orientation: landscape) {
+        :root {
+          --card-start-y: 60%;
+          --card-width: 140px;
+          --card-height: 200px;
+          --card-gap: 10px;
+          --content-width: min(300px, 45vw);
+          --content-top: 40%;
+        }
+
+        main {
+          height: 100vh;
+        }
+      }
+
+      /* Mobile Portrait */
+      @media (max-width: 768px) and (orientation: portrait) {
+        :root {
+          --card-start-y: 70%;
+          --card-start-x: 50%;
+          --card-width: 120px;
+          --card-height: 180px;
+          --card-gap: 8px;
+          --content-left: 50%;
+          --content-transform: translate(-50%, -50%);
+          --content-width: 85vw;
+          --content-top: 30%;
+          --content-align: center;
+        }
+
+        /* Mobile stack with centered alignment */
+        .item:nth-child(3) {
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .item:nth-child(4) {
+          left: calc(50% + (var(--card-width) * 0.8));
+          transform: translate(-50%, -50%);
+          z-index: -1;
+          opacity: 0.7;
+        }
+
+        .item:nth-child(5) {
+          left: calc(50% + (var(--card-width) * 1.6));
+          transform: translate(-50%, -50%);
+          z-index: -2;
+          opacity: 0.4;
+        }
+
+        .item:nth-child(6) {
+          left: calc(50% + (var(--card-width) * 2.4));
+          transform: translate(-50%, -50%);
+          opacity: 0;
+        }
+
+        .content {
+          padding: 20px 15px;
+          border-radius: 10px;
+        }
+
+        .content .title {
+          font-size: 1.8rem;
+          margin-bottom: 10px;
+        }
+
+        .content .description {
+          font-size: 0.95rem;
+          line-height: 1.5;
+          margin: 10px 0 15px;
+        }
+
+        .content button {
+          padding: 10px 25px;
+          font-size: 0.95rem;
+        }
+
+        .nav {
+          bottom: 15px;
+          padding: 8px 15px;
+          gap: 15px;
+        }
+
+        .nav .btn {
+          width: 45px;
+          height: 45px;
+          font-size: 20px;
+        }
+
+        @keyframes show {
+          from {
+            opacity: 0;
+            filter: blur(5px);
+            transform: translate(-50%, calc(-50% + 50px));
+          }
+          to {
+            opacity: 1;
+            filter: blur(0);
+          }
+        }
+      }
+
+      /* Small Mobile */
+      @media (max-width: 480px) and (orientation: portrait) {
+        :root {
+          --card-width: 100px;
+          --card-height: 150px;
+          --card-gap: 5px;
+          --content-top: 25%;
+          --content-width: 90vw;
+        }
+
+        .item {
+          border-radius: 15px;
+        }
+
+        .item:nth-child(4) {
+          left: calc(50% + (var(--card-width) * 0.9));
+        }
+
+        .item:nth-child(5) {
+          left: calc(50% + (var(--card-width) * 1.8));
+        }
+
+        .item:nth-child(6) {
+          left: calc(50% + (var(--card-width) * 2.7));
+        }
+
+        .content {
+          padding: 15px 12px;
+        }
+
+        .content .title {
+          font-size: 1.5rem;
+        }
+
+        .content .description {
+          font-size: 0.85rem;
+          margin: 8px 0 12px;
+        }
+
+        .content button {
+          padding: 8px 20px;
+          font-size: 0.85rem;
+        }
+
+        .nav {
+          bottom: 30px;
+          padding: 6px 12px;
+          gap: 12px;
+        }
+
+        .nav .btn {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+        }
+      }
+
+      /* Very Small Mobile */
+      @media (max-width: 360px) and (orientation: portrait) {
+        :root {
+          --card-width: 85px;
+          --card-height: 130px;
+          --content-top: 22%;
+        }
+
+        .content .title {
+          font-size: 1.3rem;
+        }
+
+        .content .description {
+          font-size: 0.8rem;
+        }
+
+        .content button {
+          padding: 7px 18px;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Height-based adjustments for very short screens */
+      @media (max-height: 600px) and (orientation: portrait) {
+        :root {
+          --card-start-y: 75%;
+          --content-top: 25%;
+        }
+
+        .content {
+          padding: 10px;
+        }
+
+        .content .title {
+          font-size: 1.2rem;
+          margin-bottom: 5px;
+        }
+
+        .content .description {
+          margin: 5px 0 10px;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* --- Touch Improvements --- */
+      @media (hover: none) and (pointer: coarse) {
+        .nav .btn {
+          min-width: 44px;
+          min-height: 44px;
+        }
+
+        .content button {
+          padding: 14px 28px;
+        }
+
+        /* Better touch targets */
+        .item {
+          cursor: pointer;
+        }
+      }
+
+      /* --- Transition Overlay --- */
+      .transition-curtain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        z-index: 9999;
+        opacity: 1;
+        pointer-events: none;
+        transition: opacity 0.8s ease-in-out;
+      }
+
+      .transition-curtain.hidden {
+        opacity: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="transition-curtain"></div>
+
+    <main>
+      <ul class="slider">
+        <li
+          class="item"
+          style="background-image: url('./homeservice.jpg')"
+        ></li>
+
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (2).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (3).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (4).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (5).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (6).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (7).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (8).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (9).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (10).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (11).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (13).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (14).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (15).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (16).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (17).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (18).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (19).jpg')"
+        ></li>
+        <li
+          class="item"
+          style="background-image: url('./Untitled design (20).jpg')"
+        ></li>
+      </ul>
+
+      <nav class="nav">
+        <ion-icon class="btn prev" name="arrow-back-outline"></ion-icon>
+        <ion-icon class="btn next" name="arrow-forward-outline"></ion-icon>
+      </nav>
+    </main>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <script>
+      // Slider functionality
+      const slider = document.querySelector(".slider");
+      let isAnimating = false;
+
+      function handleNavigation(direction) {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        const items = document.querySelectorAll(".item");
+
+        if (direction === "next") {
+          slider.append(items[0]);
+        } else if (direction === "prev") {
+          slider.prepend(items[items.length - 1]);
+        }
+
+        // Reset animation flag after transition
+        setTimeout(() => {
+          isAnimating = false;
+        }, 750);
+      }
+
+      // Click events for navigation
+      document.addEventListener("click", (e) => {
+        const target = e.target;
+        const isNext =
+          target.classList.contains("next") ||
+          target.parentElement.classList.contains("next");
+        const isPrev =
+          target.classList.contains("prev") ||
+          target.parentElement.classList.contains("prev");
+
+        if (isNext) handleNavigation("next");
+        if (isPrev) handleNavigation("prev");
+      });
+
+      // Touch swipe support for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      slider.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        },
+        { passive: true }
+      );
+
+      slider.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          handleSwipe();
+        },
+        { passive: true }
+      );
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left
+            handleNavigation("next");
+          } else {
+            // Swipe right
+            handleNavigation("prev");
+          }
+        }
+      }
+
+      // Transition curtain
+      window.addEventListener("load", () => {
+        const curtain = document.querySelector(".transition-curtain");
+        setTimeout(() => {
+          curtain.classList.add("hidden");
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
